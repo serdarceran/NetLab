@@ -1,9 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using static System.Console;
 
 namespace ConsoleApp1
 {
+    static class HedeExtension
+    {
+        public static void Await(this List<Task> tasks)
+        {
+            Task.WaitAll(tasks.ToArray());
+        }
+    }
 
     class Name
     {
@@ -26,7 +37,7 @@ namespace ConsoleApp1
     enum Direction { A, B }
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             //int a = 5;
             //int b = 7;
@@ -174,24 +185,104 @@ namespace ConsoleApp1
                 {"stop", (car)=> { car.stop(); } },
             };
 
-            ClassicCar car = new ClassicCar();
-            car.subscribe((ICar theCar) =>
-            {
-                carMonitor((ClassicCar)theCar);
-            });
-            
-            while (true)
-            {
-                Console.WriteLine("Enter the commands: " + string.Join(", ", commands.Keys));
-                String command = Console.ReadLine();
-                if(commands.ContainsKey(command))
-                {
-                    commands.GetValueOrDefault(command)(car);
-                } 
-                //carMonitor(car);
-            }
+            //ClassicCar car = new ClassicCar();
+            //car.subscribe((ICar theCar) =>
+            //{
+            //    carMonitor((ClassicCar)theCar);
+            //});
 
+            //while (true)
+            //{
+            //    Console.WriteLine("Enter the commands: " + string.Join(", ", commands.Keys));
+            //    String command = Console.ReadLine();
+            //    if(commands.ContainsKey(command))
+            //    {
+            //        commands.GetValueOrDefault(command)(car);
+            //    } 
+            //    //carMonitor(car);
+            //}
+
+            int testing = 0;
+
+            WriteLine($"Using static imports {Testing}");
+            WriteLine($"Using static imports {Testing1("aa")}");
+            WriteLine($"Singers {sigc}");
+
+            WriteLine($"The time is now {DateTime.Now:T}");
+            WriteLine($" The name of {nameof(testing)}");
+
+            var tt = new Dictionary<string, string>()
+            {
+                ["hede"] = "this is hede",
+                ["hodo"] = "this is hodo"
+            };
+
+            string[] aa = new[] { "aa", "aaa" };
+            var kk = new List<string>(new[] { "", "" })
+            {
+                [0] = "firsst",
+                [1] = "second"
+            };
+
+            WriteLine(kk[0]);
+            WriteLine($"{tt["hede"]}");
+            List<Task> tasks = new List<Task>();
+            DateTime startTime = DateTime.Now;
+            try
+            {
+                int b = 0;
+                int a = 1 / b;
+            }
+            catch (Exception ex)
+            {
+                WriteLine("step1");
+                tasks.Add(doLogging("file1.log", "An error:", ex));
+                WriteLine("step2");
+
+            }
+            finally
+            {
+                WriteLine("step3");
+                tasks.Add(doLogging("file2.log", "Completed."));
+                WriteLine("step4");
+            }
+            //Task.WaitAll(tasks.ToArray());
+            tasks.Await();
+            DateTime endTime = DateTime.Now;
+            WriteLine($"The time elapsed is {endTime.Subtract(startTime)}");
         }
+
+        
+
+        private static async Task doLogging(String file, String details, Exception ex = null)
+        {
+            await Task.Delay(3000);
+            using var thisFile = File.AppendText(file);
+            await thisFile.WriteLineAsync($"{details} {ex}");
+        }
+
+        public static string Testing => "testing the 1";
+
+        public static string Testing1(string a) => $"testing 2 {a}";
+
+        public static string AAA { get; set; } = "default value";
+
+        interface AA
+        {
+            string Aa { get; }
+            string Bb { get; }
+        }
+        static List<string> singers = null;
+
+
+
+
+
+        int? singerCount = singers?.Count;
+
+        static int sigc = singers?.Count ?? 0;
+
+
 
         static void carMonitor(ClassicCar car)
         {
@@ -201,6 +292,11 @@ namespace ConsoleApp1
             Console.WriteLine($"Sound       : {car.Sound}");
             Console.WriteLine($"Abc         : {car.Abc}");
 
+            var home = new Home
+            {
+                //ID = "1",
+                //Name = "MyHome"
+            };
         }
         static void printPrime(String number, String not = "not")
         {
@@ -221,6 +317,11 @@ namespace ConsoleApp1
             return true;
         }
 
+        struct Home
+        {
+            public string ID { get; set; }
+            public string Name { get; set; }
+        }
 
         static void changeNumber(ref int number, int value)
         {
